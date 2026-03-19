@@ -42,7 +42,7 @@ In quanto progetto sperimentale, il sistema presenta alcune instabilità:
 *   Problemi di rendering all'interno dell'albero delle directory (`tree`) in percorsi profondamente annidati.
 
 
-> **Curiosità**: Anche questo testo è stato generato dall'IA (Gemini 3 Flash).
+> **Curiosità**: Anche questo testo è stato generato dall'IA (Gemini 3.2).
 
 > **Note**:
 * L'output dei comandi è in italiano, ma viene fornita una traduzione in inglese.
