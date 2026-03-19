@@ -2,7 +2,7 @@
 
 Questo progetto è un sistema operativo completamente funzionante, la cui architettura e base di codice sono state generate interamente tramite **Intelligenza Artificiale**. Sviluppato in Italia come proof-of-concept, dimostra le straordinarie capacità di programmazione dei moderni modelli linguistici di grandi dimensioni, in questo caso Claude Sonnet 4.6 Extended.
 
-Il risultato è un sistema operativo creato senza che una singola riga di codice fosse scritta manualmente da un autore umano.
+Il risultato è un sistema operativo creato da un ragazzo di 14 anni e una AI, senza che una singola riga di codice fosse scritta manualmente da un autore umano.
 
 
 
@@ -57,7 +57,7 @@ In quanto progetto sperimentale, il sistema presenta alcune instabilità:
 
 This project is a fully functional operating system whose architecture and codebase were generated entirely by **Artificial Intelligence**. Developed in Italy as a proof-of-concept, it demonstrates the extraordinary programming capabilities of modern Large Language Models, in this case Claude Sonnet 4.6 Extended.
 
-The result is an operating system created without a single line of code being manually written by a human author.
+The result is an operating system created by a 14-year-old boy and an AI, without a single line of code being written manually by a human author.
 
 
 
