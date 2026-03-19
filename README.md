@@ -1,7 +1,7 @@
 # MattiaOS: Un Sistema Operativo Generato dall'IA
 *(Italian version. For the English version, scroll down.)*
 
-Questo progetto è un sistema operativo completamente funzionante, la cui architettura e base di codice sono state generate interamente tramite **Intelligenza Artificiale**. Sviluppato in Italia come proof-of-concept, dimostra le straordinarie capacità di programmazione dei moderni modelli linguistici di grandi dimensioni, in questo caso Claude Sonnet 4.6.
+Questo progetto è un sistema operativo completamente funzionante, la cui architettura e base di codice sono state generate interamente tramite **Intelligenza Artificiale**. Sviluppato in Italia come proof-of-concept, dimostra le straordinarie capacità di programmazione dei moderni modelli linguistici di grandi dimensioni, in questo caso Claude Sonnet 4.6 Extended.
 
 Il risultato è un sistema operativo creato da un ragazzo di 14 anni e una AI, senza che una singola riga di codice fosse scritta manualmente da un autore umano.
 
@@ -66,9 +66,9 @@ La shell di sistema supporta attualmente i seguenti comandi nativi:
 | `mem` | Mostra le statistiche della RAM e i processi attivi |
 | `pci` | Elenca i dispositivi PCI e le periferiche connesse |
 | `ls [path]` | Elenca i file e le directory nel percorso corrente |
-| `cd <path>` | Cambia la directory di lavoro corrente |
-| `open <path>` | Pager full-screen per file testo, binari ed ELF |
-| `edit <path>` | Editor di testo integrato (Ctrl+S per salvare, ESC per uscire) |
+| `cd [path]` | Cambia la directory di lavoro corrente |
+| `open [path]` | Pager full-screen per file testo, binari ed ELF |
+| `edit [path]` | Editor di testo integrato (Ctrl+S per salvare, ESC per uscire) |
 | `tree [path]` | Stampa la struttura completa dell'albero del filesystem |
 | `clear` | Pulisce la schermata del terminale |
 | `halt` | Esegue lo spegnimento sicuro del sistema via ACPI |
@@ -102,21 +102,61 @@ Funzionalita' della console:
     └── libmattiac.so     (stub libreria standard)
 ```
 
-## Bug Noti e Limitazioni
+## Build
 
-In quanto progetto sperimentale e in sviluppo attivo, il sistema presenta alcune limitazioni:
+**Requisiti**
+- `x86_64-elf-gcc` 13.3 (cross-compiler)
+- NASM 3.01
+- GNU Binutils 2.42
+- xorriso 1.5.6
+- Host Linux (testato su Ubuntu 24.04)
 
-- `ls /` puo' mostrare la directory come vuota in alcune condizioni (indagine in corso, diagnostica integrata nel comando `diag`).
-- L'esecuzione di programmi userspace non e' ancora attiva (richiede il loader ELF, Phase 13).
-- Nessun supporto multitasking preemptivo attivo (strutture dati pronte, dispatcher syscall non ancora collegato).
+```bash
+make kernel   # compila solo il kernel
+make iso      # build completa: kernel + bootloader + immagine ISO
+```
+
+Output: `mattiaos.iso` — immagine ISO avviabile in formato El Torito.
+
+## Test su VirtualBox
+
+Testato con le seguenti impostazioni:
+
+| Impostazione | Valore |
+| :--- | :--- |
+| Tipo | Other / Other (64-bit) |
+| Chipset | PIIX3 |
+| Memoria | minimo 256 MB |
+| Ordine di boot | Solo ottico |
+| I/O APIC | Abilitato (obbligatorio) |
+| EFI | Disabilitato (obbligatorio — solo boot BIOS legacy) |
+| Controller storage | IDE (non SATA) |
+| Video | VBoxVGA, 16 MB |
+| HPET | Disabilitato |
+
+## Bug Critici Risolti Durante lo Sviluppo
+
+- **tmpfs write/read:** `tmpfs_write` aggiornava solo la copia locale del vnode (`node->size`), non il campo canonico dentro `tmpfs_node_t` (`n->vnode.size`). Ogni `vfs_open` produce una copia superficiale del vnode tramite `readdir`; la size della copia era sempre 0, rendendo tutti i file scritti a runtime apparentemente vuoti alla riapertura.
+- **Ctrl+C:** `ascii_from_vk` controllava Ctrl+lettera dopo il check della lettera, quindi Ctrl+C produceva `'c'` invece di ETX (3). Risolto spostando il check Ctrl prima.
+- **vfs_is_dir:** Usava `ops->readdir != NULL` come fallback per il rilevamento delle directory. Tutti i nodi tmpfs condividono la stessa ops table, quindi ogni file veniva riportato come directory.
+- **Enter spurio da autorepeat:** Lo stato AR non veniva resettato all'Enter, causando pressioni ripetute di Enter dopo qualsiasi comando che impiegava più di 250ms.
+
+## Roadmap (Phase 13+)
+
+- ELF loader: `process_execve()`, `load_elf()`, stack iniziale con `argc/argv/envp/auxv`
+- Syscall dispatcher: MSR_LSTAR + handler assembly + dispatch table
+- Syscall prioritarie: `execve`, `rt_sigaction`, `setsid`, `getdents64`, `nanosleep`
+- COW page fault handler
+- Completamento della libc
+- Userspace: init, shell, coreutils (sorgenti già presenti, in attesa del loader ELF)
 
 ---
 
-> **Curiosita'**: Anche questo testo e' stato generato dall'IA (Claude Sonnet 4.6).
+> **Curiosita'**: Anche questo testo e' stato generato dall'IA (Claude Sonnet 4.6 Extended).
 
 > **Note**:
 > - L'output dei comandi e' in italiano.
-> - La versione reale del progetto e' la 5.7, considerando tutte le modifiche delle sessioni di sviluppo. Su GitHub e' pubblicata come v1.0.
+> - La versione reale del progetto e' la 5.7, considerando tutte le sessioni di sviluppo. Su GitHub e' pubblicata come v1.0.
 > - L'intero progetto e' documentato in dettaglio nel file `OS_PROJECT_BLUEPRINT.md`, generato dall'IA durante lo sviluppo. Si trova nello ZIP con i file sorgenti.
 
 ---
@@ -125,7 +165,7 @@ In quanto progetto sperimentale e in sviluppo attivo, il sistema presenta alcune
 # MattiaOS: An AI-Generated Operating System
 *(English Version)*
 
-This project is a fully functional operating system whose architecture and codebase were generated entirely by **Artificial Intelligence**. Developed in Italy as a proof-of-concept, it demonstrates the extraordinary programming capabilities of modern Large Language Models, in this case Claude Sonnet 4.6.
+This project is a fully functional operating system whose architecture and codebase were generated entirely by **Artificial Intelligence**. Developed in Italy as a proof-of-concept, it demonstrates the extraordinary programming capabilities of modern Large Language Models, in this case Claude Sonnet 4.6 Extended.
 
 The result is an operating system created by a 14-year-old boy and an AI, without a single line of code being written manually by a human author.
 
@@ -190,9 +230,9 @@ The system shell currently supports the following native commands:
 | `mem` | Shows RAM statistics and active processes |
 | `pci` | Lists connected PCI devices and peripherals |
 | `ls [path]` | Lists files and directories in the current path |
-| `cd <path>` | Changes the current working directory |
-| `open <path>` | Full-screen pager for text files, binaries, and ELF files |
-| `edit <path>` | Integrated text editor (Ctrl+S to save, ESC to exit) |
+| `cd [path]` | Changes the current working directory |
+| `open [path]` | Full-screen pager for text files, binaries, and ELF files |
+| `edit [path]` | Integrated text editor (Ctrl+S to save, ESC to exit) |
 | `tree [path]` | Prints the complete filesystem tree from the current directory |
 | `clear` | Clears the terminal screen |
 | `halt` | Executes a safe ACPI system shutdown |
@@ -260,7 +300,7 @@ Tested with the following settings:
 
 ## Key Bugs Fixed During Development
 
-- **tmpfs write/read:** `tmpfs_write` was updating only the local vnode copy (`node->size`), not the canonical field inside `tmpfs_node_t` (`n->vnode.size`). Every `vfs_open` produces a shallow copy via `readdir`; the copy's size was always 0, making all runtime-written files appear empty on the next open.
+- **tmpfs write/read:** `tmpfs_write` was updating only the local vnode copy (`node->size`), not the canonical field inside `tmpfs_node_t` (`n->vnode.size`). Every `vfs_open` produces a shallow copy of the vnode via `readdir`; the copy's size was always 0, making all runtime-written files appear empty on the next open.
 - **Ctrl+C:** `ascii_from_vk` checked Ctrl+letter after the letter check, so Ctrl+C produced `'c'` instead of ETX (3). Fixed by moving the Ctrl check first.
 - **vfs_is_dir:** Used `ops->readdir != NULL` as a fallback for directory detection. All tmpfs nodes share the same ops table, so every file was reported as a directory.
 - **Autorepeat spurious Enter:** AR state was not reset on Enter, causing repeated Enter keypresses after any command that took longer than 250ms.
@@ -276,8 +316,9 @@ Tested with the following settings:
 
 ---
 
-> **Note**: This text was written by Claude Sonnet 4.6.
+> **Note**: This text was written by Claude Sonnet 4.6 Extended.
 
 > **Notes**:
+> - The command output is in Italian.
 > - The real version of the project is 5.7, counting all development sessions. It is published on GitHub as v1.0.
 > - The entire project is documented in detail in `OS_PROJECT_BLUEPRINT.md`, generated by the AI during development. It is included in the ZIP file with the source files.
