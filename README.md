@@ -158,14 +158,15 @@ Testato con le seguenti impostazioni:
 > - L'output dei comandi e' in italiano.
 > - La versione reale del progetto e' la 5.7, considerando tutte le sessioni di sviluppo. Su GitHub e' pubblicata come v1.0.
 > - L'intero progetto e' documentato in dettaglio nel file `OS_PROJECT_BLUEPRINT.md`, generato dall'IA durante lo sviluppo. Si trova nello ZIP con i file sorgenti.
+> - Si prevede una traduzione in inglese.
 
 ---
 ---
 
 # MattiaOS: An AI-Generated Operating System
-*(English Version)*
+*(Italian version. For the English version, scroll down.)*
 
-This project is a fully functional operating system whose architecture and codebase were generated entirely by **Artificial Intelligence**. Developed in Italy as a proof-of-concept, it demonstrates the extraordinary programming capabilities of modern Large Language Models, in this case Claude Sonnet 4.6 Extended.
+This project is a fully functional operating system, whose architecture and codebase were generated entirely using Artificial Intelligence. Developed in Italy as a proof-of-concept, it demonstrates the extraordinary programming capabilities of modern large-scale language models, in this case Claude Sonnet 4.6 Extended.
 
 The result is an operating system created by a 14-year-old boy and an AI, without a single line of code being written manually by a human author.
 
@@ -173,10 +174,10 @@ The result is an operating system created by a 14-year-old boy and an AI, withou
 
 ## Development Methodology
 
-The entire development process — from kernel design to the generation of the bootable ISO image — was managed by delegating tasks to the AI.
+The entire development process—from kernel design to bootable ISO image generation—was managed by delegating tasks to the AI.
 
-- **In-Chat Compilation:** The necessary compilers were provided to the AI directly through the chat interface, allowing it to compile source code into binaries and assemble the ISO image autonomously.
-- **Toolchain:** The system was compiled using **NASM 3.01** for the Assembly components and **GCC 13.3 Cross-Compiler** (`x86_64-elf-gcc`) for the C code, ensuring a total absence of external system library dependencies.
+- **In-Chat Compilation:** The necessary compilers were provided to the AI ​​directly via the chat interface, allowing it to compile the source code into binaries and assemble the ISO image autonomously.
+- **Toolchain:** The system was compiled using **NASM 3.01** for assembly components and **GCC 13.3 Cross-Compiler** (`x86_64-elf-gcc`) for C code, ensuring a complete absence of dependencies on external system libraries.
 
 ## Technical Architecture
 
@@ -184,40 +185,40 @@ The boot process follows a custom two-stage chain:
 
 ```
 BIOS -> stage1.asm (El Torito, 512B) -> stage2.asm (custom loader)
-     -> patches Limine protocol responses in memory
-     -> kernel.elf (higher-half, 0xFFFFFFFF80000000)
+-> patches Limine protocol responses in memory
+-> kernel.elf (higher-half, 0xFFFFFFFF80000000)
 ```
 
-The kernel runs in Long Mode (64-bit) in the upper half of the address space. Physical memory starts at 0x200000. The HHDM offset is 0xFFFF800000000000.
+The kernel runs in Long Mode (64-bit) in the upper half of the address space. The physical map starts at 0x200000. The HHDM offset is 0xFFFF800000000000.
 
-**Memory management**
-- PMM: bitmap allocator, placed at `max(0x400000, kernel_phys_end)` to avoid overwriting the kernel BSS.
+**Memory Management**
+- PMM: Bitmap allocator, set to `max(0x400000, kernel_phys_end)` to avoid overwriting the kernel BSS.
 - VMM: 4-level page table management.
 - Slab allocator: 9 fixed-size caches (16-4096 bytes).
 
 **Interrupts and CPU**
-- GDT, IDT, exception handlers.
-- IRQ remapping via 8259 PIC and I/O APIC.
-- LAPIC timer calibrated against PIT channel 2 (1ms tick).
+- GDT, IDT, exception handling.
+- IRQ remapping via 8259 PIC and APIC I/O.
+- LAPIC timer calibrated on PIT channel 2 (1ms tick).
 
 **Drivers**
-- PS/2 keyboard: scan code set 2, Italian layout, Ctrl+C produces ETX.
-- VGA text mode: 80x25, CP437 codepage, hardware cursor, 128-line scrollback ring buffer.
-- PCI: bus and device enumeration.
+- PS/2 keyboard: scan code set 2, Italian layout, Ctrl+C generates ETX.
+- VGA text mode: 80x25, CP437 codepage, hardware cursor, 128-line scrollback.
+- PCI: Bus and device enumeration.
 - AHCI (SATA), NVMe.
 - VirtIO-Net and e1000 (network cards).
-- GOP framebuffer.
+- GOP Framebuffer.
 
 **Filesystem**
-- VFS: mount table, path resolution, `open/close/read/write`, two-phase directory enumeration (real entries + synthetic mount point entries).
-- tmpfs: RAM filesystem. Critical fix applied: data written to files persists correctly across `open/close` cycles.
-- devfs: mounted at `/dev`, exposes `null` and `zero`.
-- FAT32 and MattiaFS: additional filesystem drivers.
+- VFS: Mount table, path resolution, open/close/read/write, two-step directory enumeration (real entries + synthetic mount points).
+- tmpfs: Filesystem in RAM. Critical bug fixed: Written data persists correctly between successive open/close sessions.
+- devfs: Mounted on /dev, exposes null and zero.
+- FAT32 and MattiaFS: Additional drivers.
 
-**Networking**
+**Network**
 - Full stack: Ethernet, ARP, IPv4, ICMP, TCP, UDP, socket layer.
 
-**Custom Kernel and Syscalls:** While the filesystem design takes inspiration from Linux, the kernel and system calls (syscalls) were written from scratch and are entirely proprietary. Because of this custom syscall architecture, the AI developed a set of built-in commands for direct interaction with the system before the ELF loader (Phase 13) is implemented.
+**Custom Kernel and Syscalls:** Although the filesystem design draws inspiration from Linux, the kernel and system calls (syscalls) were written from scratch and are entirely proprietary. Because of this custom architecture, the AI ​​developed a set of built-in commands to allow direct interaction with the system before the ELF loader (Phase 13) was implemented.
 
 ## Available Commands
 
@@ -227,43 +228,43 @@ The system shell currently supports the following native commands:
 | :--- | :--- |
 | `help` | Lists and describes all available commands |
 | `ver` | Displays the current operating system version |
-| `mem` | Shows RAM statistics and active processes |
-| `pci` | Lists connected PCI devices and peripherals |
+| `mem` | Displays RAM statistics and active processes |
+| `pci` | Lists PCI devices and connected peripherals |
 | `ls [path]` | Lists files and directories in the current path |
 | `cd [path]` | Changes the current working directory |
-| `open [path]` | Full-screen pager for text files, binaries, and ELF files |
-| `edit [path]` | Integrated text editor (Ctrl+S to save, ESC to exit) |
-| `tree [path]` | Prints the complete filesystem tree from the current directory |
+| `open [path]` | Full-screen pager for text, binary, and ELF files |
+| `edit [path]` | Built-in text editor (Ctrl+S to save, ESC to exit) |
+| `tree [path]` | Prints the complete filesystem tree |
 | `clear` | Clears the terminal screen |
-| `halt` | Executes a safe ACPI system shutdown |
+| `halt` | Performs a safe ACPI shutdown |
 | `reboot` | Reboots the system |
 | `easteregg` | Surprise |
 | `diag` | Runs internal VFS diagnostics |
 
 Console features:
-- Up/Down arrows: navigate the last 32 commands in history.
-- Shift+Up: enter scrollback mode (128 lines); Shift+Down to exit.
-- Ctrl+C: interrupts running commands (including `tree` and `ls`).
+- Up/Down arrows: navigate through the history of the last 32 commands.
+- Shift+Up: enters scrollback mode (128 lines); Shift+Down to exit.
+- Ctrl+C: interrupts running commands (including during `tree` and `ls`).
 - Italian keyboard layout with correct CP437 encoding.
 
 ## Filesystem Layout
 
 ```
 /
-├── dev/                  (devfs)
-│   ├── null
-│   └── zero
+├── dev/ (devfs)
+│ ├── null
+│ └── zero
 ├── etc/
 ├── home/
-│   ├── ciao.txt
-│   └── mattia_hello      (demo program, executable in Phase 13)
+│ ├── hello.txt
+│ └── mattia_hello (demo program, executable in Phase 13)
 ├── tmp/
 ├── var/
 ├── sys/
-│   └── PATH              (command registry: name=exe:dep1:dep2)
-├── Binari_Eseguibili/    (equivalent of /bin, stubs pending Phase 13)
-└── Dipendenze/
-    └── libmattiac.so     (standard library stub)
+│ └── PATH (command log: name=exe:dep1:dep2)
+├── Executable_Binaries/ (equivalent of /bin, stub waiting for Phase 13) 13)
+└── Dependencies/
+└── libmattiac.so (standard library stub)
 ```
 
 ## Build
@@ -273,14 +274,14 @@ Console features:
 - NASM 3.01
 - GNU Binutils 2.42
 - xorriso 1.5.6
-- Linux host (Ubuntu 24.04 tested)
+- Linux Host (tested on Ubuntu 24.04)
 
 ```bash
-make kernel   # compile kernel only
-make iso      # full build: kernel + bootloader + ISO image
+make kernel # compiles the kernel only
+make iso # complete build: kernel + bootloader + ISO image
 ```
 
-Output: `mattiaos.iso` — bootable El Torito ISO image.
+Output: `mattiaos.iso` — a bootable ISO image in El Torito format.
 
 ## Testing on VirtualBox
 
@@ -290,35 +291,36 @@ Tested with the following settings:
 | :--- | :--- |
 | Type | Other / Other (64-bit) |
 | Chipset | PIIX3 |
-| Memory | 256 MB minimum |
-| Boot order | Optical only |
+| Memory | minimum 256 MB |
+| Boot Order | Optical Only |
 | I/O APIC | Enabled (required) |
-| EFI | Disabled (required — BIOS legacy boot only) |
-| Storage controller | IDE (not SATA) |
+| EFI | Disabled (required — legacy BIOS boot only) |
+| Storage Controller | IDE (not SATA) |
 | Video | VBoxVGA, 16 MB |
 | HPET | Disabled |
 
-## Key Bugs Fixed During Development
+## Critical Bug Fixes During Development
 
-- **tmpfs write/read:** `tmpfs_write` was updating only the local vnode copy (`node->size`), not the canonical field inside `tmpfs_node_t` (`n->vnode.size`). Every `vfs_open` produces a shallow copy of the vnode via `readdir`; the copy's size was always 0, making all runtime-written files appear empty on the next open.
+- **tmpfs write/read:** `tmpfs_write` updated only the local copy of the vnode (`node->size`), not the canonical field in `tmpfs_node_t` (`n->vnode.size`). Each `vfs_open` produces a shallow copy of the vnode via `readdir`; The copy size was always 0, making all files written at runtime appear empty upon reopening.
 - **Ctrl+C:** `ascii_from_vk` checked Ctrl+letter after the letter check, so Ctrl+C produced `'c'` instead of ETX (3). Fixed by moving the Ctrl check first.
 - **vfs_is_dir:** Used `ops->readdir != NULL` as a fallback for directory detection. All tmpfs nodes share the same ops table, so every file was reported as a directory.
-- **Autorepeat spurious Enter:** AR state was not reset on Enter, causing repeated Enter keypresses after any command that took longer than 250ms.
+- **Spurious Enter from autorepeat:** The AR state was not reset on Enter, causing repeated Enter presses after any command that took more than 250ms.
 
 ## Roadmap (Phase 13+)
 
 - ELF loader: `process_execve()`, `load_elf()`, initial stack with `argc/argv/envp/auxv`
-- Syscall dispatcher: MSR_LSTAR + assembly handler + dispatch table
+- Dispatcher syscall: MSR_LSTAR + assembly handler + dispatch table
 - Priority syscalls: `execve`, `rt_sigaction`, `setsid`, `getdents64`, `nanosleep`
 - COW page fault handler
-- libc completion
-- Userspace: init, shell, coreutils (source exists, awaiting ELF loader)
+- Libc completion
+- Userspace: init, shell, coreutils (sources already present, waiting for the ELF loader)
 
 ---
 
-> **Note**: This text was written by Claude Sonnet 4.6 Extended.
+> **Fun fact**: This text was also generated by the AI ​​(Claude Sonnet 4.6 Extended).
 
-> **Notes**:
+> **Note**:
 > - The command output is in Italian.
-> - The real version of the project is 5.7, counting all development sessions. It is published on GitHub as v1.0.
-> - The entire project is documented in detail in `OS_PROJECT_BLUEPRINT.md`, generated by the AI during development. It is included in the ZIP file with the source files.
+> - The actual version of the project is 5.7, considering all development sessions. It is published on GitHub as v1.0.
+> - The entire project is documented in detail in the `OS_PROJECT_BLUEPRINT.md` file, generated by the AI ​​during development. It is included in the ZIP with the source files.
+> - An English translation is planned.
